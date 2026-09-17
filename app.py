@@ -100,7 +100,8 @@ def show_vehicle():
 print("=== CABOS TECH ===")
 print("1. Find Vehicle")
 print("2. Add Vehicle")
-print("3. Exit")
+print("3. Add General Service")
+print("4. Exit")
 
 choice = input("\nChoose an option: ").strip()
 
