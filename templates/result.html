@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Details - CABOS TECH</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #333; }
+        p { margin: 8px 0; color: #555; }
+        a { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</h2>
+        <p><strong>VIN:</strong> {{ vehicle.vin }}</p>
+        <p><strong>Trim:</strong> {{ vehicle.trim }}</p>
+        <p><strong>Engine:</strong> {{ vehicle.engine }}</p>
+        <p><strong>Drive Type:</strong> {{ vehicle.drive_type }}</p>
+        <p><strong>Assembly Plant:</strong> {{ vehicle.plant_country }}</p>
+        <a href="/">&larr; Search Another VIN</a>
+    </div>
+</body>
+</html>
