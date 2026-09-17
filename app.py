@@ -67,6 +67,47 @@ def add_vehicle():
         print("\nThat VIN already exists. Vehicle was not added.")
 
 
+def add_general_service():
+    print("\n=== ADD GENERAL SERVICE ===")
+
+    vin = input("Enter VIN: ").strip()
+
+    vehicle = find_vehicle(vin)
+
+    if not vehicle:
+        print("\nNo vehicle found with that VIN. Service was not added.")
+        return
+
+    print("\nVehicle Found")
+    print("Make:", vehicle[1])
+    print("Model:", vehicle[2])
+    print("Year:", vehicle[3])
+
+    service_date = input("Service Date (YYYY-MM-DD): ").strip()
+    odometer = input("Odometer Reading: ").strip()
+    work_performed = input("Work Performed: ").strip()
+
+    try:
+        conn = sqlite3.connect("cabos.db")
+
+        conn.execute(
+            """
+            INSERT INTO general_services
+            (vehicle_vin, service_date, odometer_reading, work_performed)
+            VALUES (?, ?, ?, ?)
+            """,
+            (vin, service_date, int(odometer), work_performed)
+        )
+
+        conn.commit()
+        conn.close()
+
+        print("\nService added successfully.")
+
+    except ValueError:
+        print("\nInvalid odometer reading. Service was not added.")
+
+
 def show_vehicle():
     vin = input("\nEnter vehicle VIN: ").strip()
 
@@ -112,6 +153,9 @@ elif choice == "2":
     add_vehicle()
 
 elif choice == "3":
+    add_general_service()
+
+elif choice == "4":
     print("Goodbye.")
 
 else:
