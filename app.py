@@ -5,15 +5,17 @@ import os
 
 app = Flask(__name__)
 
-# Use Render PostgreSQL URL if available, fallback to local SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cabostech.db')
-if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
+# Configure PostgreSQL or SQLite fallback
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///cabostech.db')
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
-# --- CABOS TAN DATA MODELS ---
+# --- CABOS TECH & TAN DATA MODELS ---
 
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +23,10 @@ class Vehicle(db.Model):
     make = db.Column(db.String(50))
     model = db.Column(db.String(50))
     year = db.Column(db.String(10))
-    engine = db.Column(db.String(50))
+    trim = db.Column(db.String(50))
+    engine = db.Column(db.String(100))
+    drive_type = db.Column(db.String(50))
+    plant_country = db.Column(db.String(50))
     inspections = db.relationship('Inspection', backref='vehicle', lazy=True)
 
 class Inspection(db.Model):
@@ -42,8 +47,15 @@ class EmergencyDispatch(db.Model):
     issue_type = db.Column(db.String(100))
     status = db.Column(db.String(20), default='Pending')
 
-with app.app_context():
-    db.create_all()
+# Auto-create tables in PostgreSQL on request
+_tables_created = False
+
+@app.before_request
+def setup_tables():
+    global _tables_created
+    if not _tables_created:
+        db.create_all()
+        _tables_created = True
 
 # --- ROUTES ---
 
@@ -58,47 +70,36 @@ def search_vin():
     if not vin or len(vin) != 17:
         return render_template('index.html', error="Please enter a valid 17-character VIN.")
 
-    # Check local database first
-    vehicle = Vehicle.query.filter_by(vin=vin).first()
-    
-    if not vehicle:
-        # Fetch from NHTSA API if not cached locally
-        api_url = f"https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/{vin}?format=json"
-        try:
-            res = requests.get(api_url, timeout=5).json().get('Results', [{}])[0]
-            if not res.get('Make'):
-                return render_template('index.html', error="VIN not found.")
+    try:
+        # 1. Search local PostgreSQL database
+        vehicle = Vehicle.query.filter_by(vin=vin).first()
+        
+        # 2. Fetch from NHTSA API if vehicle record does not exist
+        if not vehicle:
+            api_url = f"https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/{vin}?format=json"
+            res_data = requests.get(api_url, timeout=5).json().get('Results', [{}])[0]
             
-            # Save new vehicle profile to CABOS TECH database
+            if not res_data.get('Make'):
+                return render_template('index.html', error="VIN not found or invalid format.")
+            
             vehicle = Vehicle(
                 vin=vin,
-                make=res.get('Make', 'N/A'),
-                model=res.get('Model', 'N/A'),
-                year=res.get('ModelYear', 'N/A'),
-                engine=f"{res.get('DisplacementL', '')}L {res.get('EngineConfiguration', '')}"
+                make=res_data.get('Make', 'N/A'),
+                model=res_data.get('Model', 'N/A'),
+                year=res_data.get('ModelYear', 'N/A'),
+                trim=res_data.get('Trim', 'N/A'),
+                engine=f"{res_data.get('DisplacementL', '')}L {res_data.get('EngineConfiguration', '')} {res_data.get('EngineCylinders', '')} Cyl",
+                drive_type=res_data.get('DriveType', 'N/A'),
+                plant_country=res_data.get('PlantCountry', 'N/A')
             )
             db.session.add(vehicle)
             db.session.commit()
-        except Exception as e:
-            return render_template('index.html', error=f"API Error: {str(e)}")
 
-    return render_template('result.html', vehicle=vehicle)
+        return render_template('result.html', vehicle=vehicle)
 
-# --- CABOS TAN WORKSHOP MODULES ---
-
-@app.route('/inspection/add/<int:vehicle_id>', methods=['POST'])
-def add_inspection(vehicle_id):
-    inspection = Inspection(
-        vehicle_id=vehicle_id,
-        camber_front=request.form.get('camber'),
-        caster_front=request.form.get('caster'),
-        toe_front=request.form.get('toe'),
-        suspension_status=request.form.get('suspension'),
-        notes=request.form.get('notes')
-    )
-    db.session.add(inspection)
-    db.session.commit()
-    return redirect(url_for('home'))
+    except Exception as e:
+        db.session.rollback()
+        return render_template('index.html', error=f"System Error: {str(e)}")
 
 if __name__ == '__main__':
     app.run(debug=True)
