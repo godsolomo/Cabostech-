@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parts & Accessories Engine - CABOS TECH</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 15px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 15px; }
+        .part-card { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 8px; }
+        .part-img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; border: 1px solid #334155; }
+        .tag-instock { background: #16a34a; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; }
+        .tag-order { background: #d97706; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; }
+        .tag-out { background: #dc2626; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; }
+        input, select, textarea, button { width: 100%; padding: 10px; margin: 6px 0 12px 0; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+        button { background: #2563eb; font-weight: bold; cursor: pointer; border: none; }
+        a { color: #38bdf8; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="color:#60a5fa; margin:0;">📦 Parts & Accessories Engine</h2>
+            <a href="/">&larr; Return to Workshop</a>
+        </div>
+
+        <!-- Add Part Form (For Suppliers & Technicians) -->
+        <div class="card">
+            <h3 style="margin-top:0; color:#38bdf8;">+ Upload Part / Accessory Listing</h3>
+            <form action="/parts/add" method="POST" enctype="multipart/form-data">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Part Name</label>
+                        <input type="text" name="name" required placeholder="e.g. Front Lower Control Arm">
+                    </div>
+                    <div>
+                        <label>Part Number</label>
+                        <input type="text" name="part_number" placeholder="e.g. 48068-06070">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Category</label>
+                        <select name="category">
+                            <option value="Suspension">Suspension</option>
+                            <option value="Steering">Steering</option>
+                            <option value="Engine & Filters">Engine & Filters</option>
+                            <option value="Oils & Fluids">Oils & Fluids</option>
+                            <option value="Braking">Braking</option>
+                            <option value="Tyres & Wheels">Tyres & Wheels</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Brand</label>
+                        <input type="text" name="brand" placeholder="e.g. Toyota / Mobil 1">
+                    </div>
+                    <div>
+                        <label>Availability</label>
+                        <select name="availability">
+                            <option value="In Stock">In Stock (Available)</option>
+                            <option value="Order Request">Order Request (Supplier)</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Price (₦ / $)</label>
+                <input type="text" name="price" placeholder="e.g. ₦45,000">
+
+                <label>Description & Compatible Models</label>
+                <textarea name="description" rows="2" placeholder="e.g. Fits Toyota Camry 2012-2017 2.5L..."></textarea>
+
+                <label>📸 Product Visual Image</label>
+                <input type="file" name="image" accept="image/*" required>
+
+                <button type="submit">Publish Part Listing</button>
+            </form>
+        </div>
+
+        <!-- Parts Marketplace Listings -->
+        <div class="card">
+            <h3 style="margin-top:0;">Available Component Catalog</h3>
+            {% if parts %}
+                <div class="grid">
+                    {% for p in parts %}
+                        <div class="part-card">
+                            {% if p.image_url %}
+                                <img src="{{ p.image_url }}" class="part-img" alt="{{ p.name }}">
+                            {% endif %}
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <strong style="color:#f8fafc; font-size:1em;">{{ p.name }}</strong>
+                                {% if p.availability == 'In Stock' %}
+                                    <span class="tag-instock">Available</span>
+                                {% elif p.availability == 'Order Request' %}
+                                    <span class="tag-order">Order Request</span>
+                                {% else %}
+                                    <span class="tag-out">Out of Stock</span>
+                                {% endif %}
+                            </div>
+                            <small style="color:#94a3b8;">P/N: {{ p.part_number }} | {{ p.brand }}</small><br>
+                            <div style="color:#38bdf8; font-weight:bold; font-size:1.1em; margin: 6px 0;">{{ p.price }}</div>
+                            <p style="font-size:0.85em; color:#cbd5e1; margin:0 0 8px 0;">{{ p.description }}</p>
+                            <small style="color:#64748b;">Supplier: {{ p.seller_name }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color:#94a3b8;">No parts listed yet. Use the form above to publish your first part item.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

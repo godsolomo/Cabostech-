@@ -6,42 +6,50 @@
     <title>CABOS TECH — Auto Workshop & Vehicle Intelligence</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0; }
-        .hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #2563eb; }
-        .brand { font-size: 2em; font-weight: 800; color: #60a5fa; letter-spacing: 1px; margin: 0; }
-        .sub { font-size: 1.1em; color: #94a3b8; margin-top: 5px; }
+        .navbar { background: #1e293b; border-bottom: 1px solid #334155; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 35px 20px; text-align: center; border-bottom: 2px solid #2563eb; }
+        .brand { font-size: 1.8em; font-weight: 800; color: #60a5fa; letter-spacing: 1px; margin: 0; }
         .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-
-        .search-card { background: #1e293b; border: 1px solid #334155; padding: 25px; border-radius: 12px; margin-top: -30px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .search-card h3 { margin-top: 0; color: #f1f5f9; font-size: 1.2em; text-align: center; }
+        
+        .search-card { background: #1e293b; border: 1px solid #334155; padding: 25px; border-radius: 12px; margin-top: -25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .search-box { display: flex; gap: 10px; margin-top: 15px; }
         input[type="text"] { flex: 1; padding: 14px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 1em; text-transform: uppercase; }
-        button { background: #2563eb; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em; transition: 0.2s; }
-        button:hover { background: #1d4ed8; }
-
-        .section-title { font-size: 1.3em; margin: 30px 0 15px 0; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        button { background: #2563eb; color: white; border: none; padding: 14px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        .section-title { font-size: 1.2em; margin: 25px 0 15px 0; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 8px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-        .service-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px; transition: 0.2s; }
-        .service-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
-        .service-card h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 1.1em; }
-        .service-card p { font-size: 0.85em; color: #94a3b8; margin: 0; line-height: 1.4; }
-
-        .error-msg { background: #7f1d1d; color: #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 0.9em; }
+        .service-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; }
+        a { color: #38bdf8; text-decoration: none; }
+        .btn-sm { background: #2563eb; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; font-weight: bold; }
     </style>
 </head>
 <body>
 
+    <div class="navbar">
+        <div style="font-weight:bold; color:#60a5fa;">CABOS TECH WORKSHOP</div>
+        <div>
+            {% if current_user.is_authenticated %}
+                <span style="font-size:0.85em; color:#cbd5e1; margin-right:10px;">👤 {{ current_user.username }} ({{ current_user.role.upper() }})</span>
+                <a href="/logout" style="color:#fca5a5; font-size:0.85em;">Logout</a>
+            {% else %}
+                <a href="/login" style="margin-right:12px; color:#cbd5e1;">Login</a>
+                <a href="/signup" class="btn-sm">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="hero">
         <div class="brand">CABOS TECH AUTO WORKSHOP</div>
-        <div class="sub">Precision Alignment, Diagnostics & Digital Maintenance Intelligence</div>
+        <div style="color: #94a3b8; font-size: 1em; margin-top: 5px;">Precision Alignment, Diagnostics & Digital Maintenance Intelligence</div>
     </div>
 
     <div class="container">
         {% if error %}
-            <div class="error-msg">{{ error }}</div>
+            <div style="background:#7f1d1d; color:#fca5a5; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center;">{{ error }}</div>
         {% endif %}
 
         <div class="search-card">
-            <h3>Vehicle Lookup & Workshop Entry</h3>
+            <h3 style="margin-top:0; text-align:center;">Vehicle Lookup & Workshop Entry</h3>
             <form action="/search" method="POST">
                 <div class="search-box">
                     <input type="text" name="vin" maxlength="17" placeholder="Enter 17-Digit Vehicle VIN..." required>
@@ -50,40 +58,14 @@
             </form>
         </div>
 
-        <div class="section-title">Core Workshop Services</div>
+        <div class="section-title">Core Workshop Modules</div>
         <div class="grid">
-            <div class="service-card">
-                <h4>🛢️ Oil Change & Maintenance</h4>
-                <p>Engine oil, oil filter replacement, odometer tracking, transmission fluid intervals, and next service alerts.</p>
-            </div>
-            <div class="service-card">
-                <h4>📐 Wheel Alignment</h4>
-                <p>Front/rear Camber, Caster, and Toe calibration, thrust angle checks, and steering wheel centering.</p>
-            </div>
-            <div class="service-card">
-                <h4>⚖️ Wheel Balancing</h4>
-                <p>Dynamic wheel spin balancing, rim position checks, weight adjustment records, and vibration correction.</p>
-            </div>
-            <div class="service-card">
-                <h4>🔧 Underbody & Suspension</h4>
-                <p>Control arms, bushings, tie rods, ball joints, shock absorbers, CV axles, and wheel bearing inspection.</p>
-            </div>
-            <div class="service-card">
-                <h4>💻 Diagnostics Scan</h4>
-                <p>Full-system OBD2 diagnostics, active module live sensor testing, trouble code scans, and reset logs.</p>
-            </div>
-            <div class="service-card">
-                <h4>🚨 Emergency Towing & Roadside</h4>
-                <p>Rapid dispatch assistance, pickup/destination tracking, and vehicle condition reporting.</p>
-            </div>
-        </div>
-
-        <div class="section-title">Parts & Accessories Engine</div>
-        <div class="grid">
-            <div class="service-card" style="grid-column: 1 / -1;">
-                <h4>📦 Component Sourcing & Compatibility Check</h4>
-                <p>Search replacement filters, oils, suspension arms, tie rods, bearings, and brake pads directly matched to your vehicle's decoded VIN specifications.</p>
-            </div>
+            <div class="service-card"><h4>🛢️ Oil Change & Maintenance</h4><p style="font-size:0.85em; color:#94a3b8;">Odometer tracking, oil/filter grades, and service history logs.</p></div>
+            <div class="service-card"><h4>📐 Wheel Alignment</h4><p style="font-size:0.85em; color:#94a3b8;">Front/rear Camber, Caster, Toe calibration, and measurement records.</p></div>
+            <div class="service-card"><h4>⚖️ Wheel Balancing</h4><p style="font-size:0.85em; color:#94a3b8;">Wheel weight adjustments, position records, and vibration correction.</p></div>
+            <div class="service-card"><h4>🔧 Underbody & Suspension</h4><p style="font-size:0.85em; color:#94a3b8;">Bushings, ball joints, control arms, and visual inspection uploads.</p></div>
+            <div class="service-card"><h4>💻 Diagnostics Scan</h4><p style="font-size:0.85em; color:#94a3b8;">Full OBD2 diagnostic scans, trouble codes, and scanner photo uploads.</p></div>
+            <div class="service-card"><h4>📦 Parts Engine Marketplace</h4><p style="font-size:0.85em; color:#94a3b8;">Browse parts, upload visual product photos, and check stock. <br><a href="/parts" style="font-weight:bold; display:inline-block; margin-top:5px;">Open Parts Engine &rarr;</a></p></div>
         </div>
     </div>
 
