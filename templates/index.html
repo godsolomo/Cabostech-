@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CABOS TECH — Auto Workshop & Vehicle Intelligence</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0; }
+        .hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #2563eb; }
+        .brand { font-size: 2em; font-weight: 800; color: #60a5fa; letter-spacing: 1px; margin: 0; }
+        .sub { font-size: 1.1em; color: #94a3b8; margin-top: 5px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        .search-card { background: #1e293b; border: 1px solid #334155; padding: 25px; border-radius: 12px; margin-top: -30px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .search-card h3 { margin-top: 0; color: #f1f5f9; font-size: 1.2em; text-align: center; }
+        .search-box { display: flex; gap: 10px; margin-top: 15px; }
+        input[type="text"] { flex: 1; padding: 14px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 1em; text-transform: uppercase; }
+        button { background: #2563eb; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em; transition: 0.2s; }
+        button:hover { background: #1d4ed8; }
+
+        .section-title { font-size: 1.3em; margin: 30px 0 15px 0; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .service-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px; transition: 0.2s; }
+        .service-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+        .service-card h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 1.1em; }
+        .service-card p { font-size: 0.85em; color: #94a3b8; margin: 0; line-height: 1.4; }
+
+        .error-msg { background: #7f1d1d; color: #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <div class="brand">CABOS TECH AUTO WORKSHOP</div>
+        <div class="sub">Precision Alignment, Diagnostics & Digital Maintenance Intelligence</div>
+    </div>
+
+    <div class="container">
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <div class="search-card">
+            <h3>Vehicle Lookup & Workshop Entry</h3>
+            <form action="/search" method="POST">
+                <div class="search-box">
+                    <input type="text" name="vin" maxlength="17" placeholder="Enter 17-Digit Vehicle VIN..." required>
+                    <button type="submit">Access Vehicle</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="section-title">Core Workshop Services</div>
+        <div class="grid">
+            <div class="service-card">
+                <h4>🛢️ Oil Change & Maintenance</h4>
+                <p>Engine oil, oil filter replacement, odometer tracking, transmission fluid intervals, and next service alerts.</p>
+            </div>
+            <div class="service-card">
+                <h4>📐 Wheel Alignment</h4>
+                <p>Front/rear Camber, Caster, and Toe calibration, thrust angle checks, and steering wheel centering.</p>
+            </div>
+            <div class="service-card">
+                <h4>⚖️ Wheel Balancing</h4>
+                <p>Dynamic wheel spin balancing, rim position checks, weight adjustment records, and vibration correction.</p>
+            </div>
+            <div class="service-card">
+                <h4>🔧 Underbody & Suspension</h4>
+                <p>Control arms, bushings, tie rods, ball joints, shock absorbers, CV axles, and wheel bearing inspection.</p>
+            </div>
+            <div class="service-card">
+                <h4>💻 Diagnostics Scan</h4>
+                <p>Full-system OBD2 diagnostics, active module live sensor testing, trouble code scans, and reset logs.</p>
+            </div>
+            <div class="service-card">
+                <h4>🚨 Emergency Towing & Roadside</h4>
+                <p>Rapid dispatch assistance, pickup/destination tracking, and vehicle condition reporting.</p>
+            </div>
+        </div>
+
+        <div class="section-title">Parts & Accessories Engine</div>
+        <div class="grid">
+            <div class="service-card" style="grid-column: 1 / -1;">
+                <h4>📦 Component Sourcing & Compatibility Check</h4>
+                <p>Search replacement filters, oils, suspension arms, tie rods, bearings, and brake pads directly matched to your vehicle's decoded VIN specifications.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
